@@ -5,6 +5,7 @@ A boilerplate for projects that want a few more batteries.
 * Flexible & modular authoring
 * Light & dark mode support
 * Retina image support
+* Extensible LCP detection
 * Extensible Sidekick plumbing
 * AEM Experimentation
 * Advanced Section Metadata
