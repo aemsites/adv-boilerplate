@@ -8,13 +8,18 @@ A boilerplate for projects that want a few more batteries.
 * Extensible LCP detection
 * Extensible Sidekick plumbing
 * AEM Experimentation
-* Content scheduling simulation
+* Content scheduling simulator
 * Advanced Section Metadata
 * Adobe Fonts support
-* Link block support
+* Widget support
+* Authorable placeholders
 * Link hash utils
 * Advanced favicon support
 * CSS scoping best practices
 * Buildless Web Component support
 * AEM Operational Telemetry (v2)
 * Zero global scope polluting
+* Mega menu support
+* eslint-disable free logging
+* Mega menu support
+* Localized 404
