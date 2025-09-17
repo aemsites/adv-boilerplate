@@ -9,7 +9,10 @@ A boilerplate for projects that want a few more batteries.
 * Extensible Sidekick plumbing
 * AEM Experimentation
 * Advanced Section Metadata
-* Adobe Font support
+* Adobe Fonts support
+* Link block support
+* Link hash utils
+* Advanced favicon support
 * CSS scoping best practices
 * Buildless Web Component support
 * AEM Operational Telemetry (v2)
