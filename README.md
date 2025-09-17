@@ -11,7 +11,7 @@ A boilerplate for projects that want a few more batteries.
 * Content scheduling simulator
 * Advanced Section Metadata
 * Adobe Fonts support
-* Link block support
+* Widget support
 * Link hash utils
 * Advanced favicon support
 * CSS scoping best practices
