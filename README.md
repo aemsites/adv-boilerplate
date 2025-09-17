@@ -19,3 +19,4 @@ A boilerplate for projects that want a few more batteries.
 * AEM Operational Telemetry (v2)
 * Zero global scope polluting
 * Mega menu support
+* Graceful logging
