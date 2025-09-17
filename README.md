@@ -12,6 +12,7 @@ A boilerplate for projects that want a few more batteries.
 * Advanced Section Metadata
 * Adobe Fonts support
 * Widget support
+* Authorable placeholders
 * Link hash utils
 * Advanced favicon support
 * CSS scoping best practices
