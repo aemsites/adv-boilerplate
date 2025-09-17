@@ -8,6 +8,7 @@ A boilerplate for projects that want a few more batteries.
 * Extensible LCP detection
 * Extensible Sidekick plumbing
 * AEM Experimentation
+* Content scheduling simulation
 * Advanced Section Metadata
 * Adobe Fonts support
 * Link block support
