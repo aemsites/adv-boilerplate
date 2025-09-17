@@ -1,4 +1,4 @@
-import { getConfig, getMetadata } from '../nx.js';
+import { getConfig, getMetadata } from '../adv.js';
 
 (async function loadFavicon() {
   const { codeBase } = getConfig();

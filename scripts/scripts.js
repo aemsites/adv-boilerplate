@@ -1,4 +1,4 @@
-import { loadArea, loadStyle, loadBlock, setConfig } from './nx.js';
+import { loadArea, setConfig } from './adv.js';
 
 // Supported locales
 const locales = {
@@ -22,20 +22,7 @@ const decorateArea = ({ area = document }) => {
   eagerLoad(area, 'img');
 };
 
-const loadNav = async (name) => {
-  const position = name === 'sitenav' ? 'beforebegin' : 'afterend';
-  const main = document.querySelector('main');
-  const nav = document.createElement('nav');
-  nav.dataset.status = 'decorated';
-  nav.className = name;
-  main.insertAdjacentElement(position, nav);
-  await loadBlock(nav);
-};
-
 (async function loadPage() {
   setConfig({ locales, widgets, decorateArea });
-
-  loadNav('sitenav');
   await loadArea();
-  await loadNav('pagenav');
 }());

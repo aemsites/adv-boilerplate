@@ -1,8 +1,7 @@
-import { getConfig, getMetadata } from '../../scripts/nx.js';
-import getSvg from '../../scripts/utils/svg.js';
+import { getConfig, getMetadata } from '../../scripts/adv.js';
 import { loadFragment } from '../fragment/fragment.js';
 
-const { locale, codeBase } = getConfig();
+const { locale } = getConfig();
 
 const HEADER_PATH = '/fragments/nav/header';
 
@@ -19,9 +18,7 @@ async function decorateLink(section, pattern, name) {
   if (!link) return;
 
   link.setAttribute('aria-label', link.textContent);
-  const svg = await getSvg({ paths: [`${codeBase}/img/logos/${name}.svg`] });
   link.innerHTML = '';
-  link.append(svg[0]);
   link.target = '_blank';
   link.classList.add('decorated');
 
@@ -30,19 +27,19 @@ async function decorateLink(section, pattern, name) {
       e.preventDefault();
       const { body } = document;
 
-      let currPref = localStorage.getItem('docket-theme');
+      let currPref = localStorage.getItem('color-scheme');
       if (!currPref) {
         currPref = matchMedia('(prefers-color-scheme: dark)')
-          .matches ? 'dark-theme' : 'light-theme';
+          .matches ? 'dark-scheme' : 'light-scheme';
       }
 
-      const theme = currPref === 'dark-theme'
-        ? { add: 'light-theme', remove: 'dark-theme' }
-        : { add: 'dark-theme', remove: 'light-theme' };
+      const theme = currPref === 'dark-scheme'
+        ? { add: 'light-scheme', remove: 'dark-scheme' }
+        : { add: 'dark-scheme', remove: 'light-scheme' };
 
       body.classList.remove(theme.remove);
       body.classList.add(theme.add);
-      localStorage.setItem('docket-theme', theme.add);
+      localStorage.setItem('color-scheme', theme.add);
     });
   }
 }
@@ -56,6 +53,7 @@ async function decorateActions(section) {
 }
 
 async function decorateHeader(fragment) {
+  console.log(fragment.innerHTML);
   const img = fragment.querySelector('.section:first-child img');
   if (img) {
     const brand = img.closest('.section');
@@ -81,8 +79,8 @@ export default async function init(el) {
   const path = headerMeta || HEADER_PATH;
   try {
     const fragment = await loadFragment(`${locale.base}${path}`);
-    fragment.classList.add('header-content');
-    await decorateHeader(fragment);
+    // fragment.classList.add('header-content');
+    // await decorateHeader(fragment);
     el.append(fragment);
   } catch (e) {
     throw Error(e);

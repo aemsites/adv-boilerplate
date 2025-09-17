@@ -1,4 +1,4 @@
-import { loadArea, getConfig } from '../../scripts/nx.js';
+import { loadArea, getConfig } from '../../scripts/adv.js';
 
 function replaceDotMedia(path, doc) {
   const resetAttributeBase = (tag, attr) => {
@@ -16,7 +16,7 @@ function replaceDotMedia(path, doc) {
  * @returns {HTMLElement} The root element of the fragment
  */
 export async function loadFragment(path) {
-  const { decorateArea } = getConfig();
+  const config = getConfig();
 
   const resp = await fetch(`${path}.plain.html`);
   if (!resp.ok) throw Error(`Couldn't fetch ${path}.plain.html`);
@@ -27,13 +27,13 @@ export async function loadFragment(path) {
   // Make embeded images cacheable
   replaceDotMedia(path, doc);
 
-  const sections = doc.querySelectorAll('body > div');
+  const sections = doc.body.querySelectorAll(':scope > div');
   const fragment = document.createElement('div');
   fragment.classList.add('fragment-content');
   fragment.append(...sections);
 
   // Hydrate like a normal page
-  if (decorateArea) decorateArea({ area: fragment });
+  if (config.decorateArea) config.decorateArea({ area: fragment });
   loadArea({ area: fragment });
 
   return fragment;
