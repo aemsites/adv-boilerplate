@@ -22,3 +22,4 @@ A boilerplate for projects that want a few more batteries.
 * Mega menu support
 * eslint-disable free logging
 * Mega menu support
+* Localized 404
