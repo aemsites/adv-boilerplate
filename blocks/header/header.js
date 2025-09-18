@@ -5,26 +5,24 @@ const { locale } = getConfig();
 
 const HEADER_PATH = '/fragments/nav/header';
 
-function decorateBrand(el) {
-  el.classList.add('brand-section');
-}
-
-function decorateMainNav(el) {
-  el.classList.add('main-nav-section');
-}
-
 async function decorateLink(section, pattern, name) {
   const link = section.querySelector(`[href*="${pattern}"]`);
   if (!link) return;
 
-  link.setAttribute('aria-label', link.textContent);
-  link.innerHTML = '';
-  link.target = '_blank';
-  link.classList.add('decorated');
+  const icon = link.querySelector('span.icon');
+  const text = link.textContent;
+  const btn = document.createElement('button');
+  if (icon) btn.append(icon);
+  if (text) {
+    const textSpan = document.createElement('span');
+    textSpan.className = 'text';
+    textSpan.textContent = text;
+    btn.append(textSpan);
+  }
+  link.parentElement.replaceChild(btn, link);
 
   if (name === 'color') {
-    link.addEventListener('click', (e) => {
-      e.preventDefault();
+    btn.addEventListener('click', () => {
       const { body } = document;
 
       let currPref = localStorage.getItem('color-scheme');
@@ -44,30 +42,43 @@ async function decorateLink(section, pattern, name) {
   }
 }
 
+function decorateBrand(section) {
+  section.classList.add('brand-section');
+}
+
+function decorateMainNav(section) {
+  section.classList.add('main-nav-section');
+}
+
 async function decorateActions(section) {
   section.classList.add('actions-section');
-  const color = decorateLink(section, '/tools/widgets/theme', 'color');
+  const color = decorateLink(section, '/tools/widgets/scheme', 'color');
   const discord = decorateLink(section, 'discord.com', 'discord');
   const github = decorateLink(section, 'github.com', 'github');
   await Promise.all([color, discord, github]);
 }
 
 async function decorateHeader(fragment) {
-  console.log(fragment.innerHTML);
-  const img = fragment.querySelector('.section:first-child img');
-  if (img) {
-    const brand = img.closest('.section');
-    decorateBrand(brand);
-  }
+  const sections = fragment.querySelectorAll('.section');
+  if (sections[0]) decorateBrand(sections[0]);
+  if (sections[1]) decorateMainNav(sections[1]);
+  if (sections[2]) decorateActions(sections[2]);
 
-  const ul = fragment.querySelector('ul');
-  const mainNav = ul.closest('.section');
-  decorateMainNav(mainNav);
+  // if (img) {
+  //   const brand = img.closest('.section');
+  //   decorateBrand(brand);
+  // }
 
-  const actions = fragment.querySelector('.section:last-child');
+  // const ul = fragment.querySelector('ul');
+  // if (ul) {
+  //   const mainNav = ul.closest('.section');
+  //   decorateMainNav(mainNav);
+  // }
 
-  // Only decorate the action area if it has not been decorated
-  if (actions?.classList.length < 2) await decorateActions(actions);
+  // const actions = fragment.querySelector('.section:last-child');
+
+  // // Only decorate the action area if it has not been decorated
+  // if (actions?.classList.length < 2) await decorateActions(actions);
 }
 
 /**
@@ -79,8 +90,8 @@ export default async function init(el) {
   const path = headerMeta || HEADER_PATH;
   try {
     const fragment = await loadFragment(`${locale.base}${path}`);
-    // fragment.classList.add('header-content');
-    // await decorateHeader(fragment);
+    fragment.classList.add('header-content');
+    await decorateHeader(fragment);
     el.append(fragment);
   } catch (e) {
     throw Error(e);

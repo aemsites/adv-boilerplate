@@ -1,4 +1,4 @@
-import { getConfig, getMetadata } from '../../scripts/nx.js';
+import { getConfig, getMetadata } from '../../scripts/adv.js';
 import { loadFragment } from '../fragment/fragment.js';
 
 const FOOTER_PATH = '/fragments/nav/footer';
