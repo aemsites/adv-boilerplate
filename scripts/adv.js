@@ -15,13 +15,12 @@ export function getMetadata(name) {
   return meta && meta.content;
 }
 
-export function getLocale(locales = { '': {} }) {
+export function getLocale(locales) {
   const { pathname } = window.location;
-  const matches = Object.keys(locales).filter((locale) => pathname.startsWith(`/${locale}/`));
+  const matches = Object.keys(locales).filter((locale) => pathname.startsWith(`${locale}/`));
   const prefix = getMetadata('locale') || matches.sort((a, b) => b.length - a.length)?.[0] || '';
   if (locales[prefix].ietf) document.documentElement.lang = locales[prefix].ietf;
-  const base = prefix === '' ? '' : `/${prefix}`;
-  return { prefix, base, ...locales[prefix] };
+  return { prefix, ...locales[prefix] };
 }
 
 export const [setConfig, getConfig] = (() => {
@@ -116,9 +115,9 @@ function localizeLinks(links) {
       const { origin, pathname, search, hash } = url;
 
       // If the link is already localized, do nothing
-      if (pathname.startsWith(`/${locale.prefix}/`)) return;
+      if (pathname.startsWith(`${locale.prefix}/`)) return;
 
-      link.href = `${origin}/${locale.prefix}${pathname}${search}${hash}`;
+      link.href = `${origin}${locale.prefix}${pathname}${search}${hash}`;
     } catch {
       throw Error('Could not localize link');
     }
@@ -134,9 +133,7 @@ function decorateLinks(el) {
     const found = widgets.some((pattern) => {
       const key = Object.keys(pattern)[0];
       if (!href.includes(pattern[key])) return false;
-      // Base CSS classes
       const classes = [key, 'auto-block'];
-      // If its a fragment, do not load a stylesheet
       if (key === 'fragment') classes.push('cmp');
       a.classList.add(...classes);
       return true;
