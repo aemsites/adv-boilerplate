@@ -2,7 +2,8 @@
   box-shadow: 0 1px 6px 0 rgba(0 0 0 / 12%);
   border-radius: var(--s2-radius-200);
   overflow: hidden;
-  background-color: #fff;
+  background-color: light-dark(var(--color-gray-50), var(--color-gray-900));
+  color: light-dark(var(--color-dark), var(--color-light));
   transition: all 0.25s ease-in-out;
 
   picture {
@@ -61,29 +62,5 @@
     margin: 0;
     display: flex;
     justify-content: end;
-
-    strong a {
-      background-color: var(--s2-blue-800);
-      border-radius: var(--s2-radius-300);
-      border: 2px solid var(--s2-blue-800);
-      border-color: var(--s2-blue-800);
-      color: #fff;
-      display: inline-block;
-      font-size: 15px;
-      font-style: normal;
-      font-weight: 700;
-      line-height: 18px;
-      padding: 5px 14px;
-      text-decoration: none;
-      outline-offset: 0;
-      outline-color: var(--s2-blue-800);
-      transition: outline-offset 0.2s;
-    }
-
-    strong a:focus {
-      background-color: #3b63fb;
-      border: 2px solid #3b63fb;
-      outline-offset: 4px;
-    }
   }
 }

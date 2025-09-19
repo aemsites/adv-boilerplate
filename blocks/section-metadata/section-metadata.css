@@ -19,6 +19,34 @@
     --grid-size: 6;
   }
 
+  &.gap-xs {
+    --gap-spacing: var(--spacing-xs);
+  }
+
+  &.gap-s {
+    --gap-spacing: var(--spacing-s);
+  }
+
+  &.gap-m {
+    --gap-spacing: var(--spacing-m);
+  }
+
+  &.gap-l {
+    --gap-spacing: var(--spacing-l);
+  }
+
+  &.gap-xl {
+    --gap-spacing: var(--spacing-xl);
+  }
+
+  &.gap-xxl {
+    --gap-spacing: var(--spacing-xxl);
+  }
+
+  .section-content {
+    gap: var(--gap-spacing);
+  }
+
   &.center {
     .default-content {
       text-align: center;
