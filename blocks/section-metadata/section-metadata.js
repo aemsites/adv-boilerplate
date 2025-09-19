@@ -19,16 +19,14 @@ async function handleStyle(text, section) {
 
 async function handleLayout(text, section, type) {
   if (text === '0') return;
+  if (type === 'grid') {
+    section.classList.add('grid');
+    const children = section.querySelectorAll('.section-content > *');
+    if (children[0].classList.contains('default-content')) {
+      section.prepend(children[0]);
+    }
+  }
   section.classList.add(`${type}-${text}`);
-}
-
-function handleContainer(section) {
-  const container = document.createElement('div');
-  container.className = 'section-container';
-  const children = section.childNodes;
-  const filtered = [...children].filter((item) => !item.classList?.contains('section-metadata'));
-  container.append(...filtered);
-  section.insertAdjacentElement('afterbegin', container);
 }
 
 function handleTitle(section) {
@@ -49,7 +47,6 @@ const getMetadata = (el) => [...el.childNodes].reduce((rdx, row) => {
 export default async function init(el) {
   const section = el.closest('.section');
   if (!section) return;
-  handleContainer(section);
   if (!section.closest('footer')) handleTitle(section);
   const metadata = getMetadata(el);
   if (metadata.style?.text) await handleStyle(metadata.style.text, section);

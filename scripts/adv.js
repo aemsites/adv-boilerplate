@@ -144,16 +144,9 @@ function decorateLinks(el) {
 }
 
 function loadIcons(el) {
-  const { codeBase } = getConfig();
   const icons = el.querySelectorAll('span.icon');
-  for (const icon of icons) {
-    const name = icon.classList[1].substring(5);
-    const svg = `<svg class="${icon.className}">
-      <use href="${codeBase}/img/icons/${name}.svg#${name}"></use>
-    </svg>`;
-    icon.insertAdjacentHTML('afterend', svg);
-    icon.remove();
-  }
+  if (!icons.length) return;
+  import('./utils/icons.js').then((mod) => mod.default(icons));
 }
 
 function decorateSections(parent, isDoc) {
