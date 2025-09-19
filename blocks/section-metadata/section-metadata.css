@@ -18,20 +18,31 @@
   &.grid-6 {
     --grid-size: 6;
   }
-}
 
-.section .section-container {
-  position: relative;
-  display: grid;
-  grid-template-columns: 1fr;
-  z-index: 2;
-}
+  &.center {
+    .default-content {
+      text-align: center;
+    }
+  }
 
-.section.center .default-content {
-  text-align: center;
+  &.container {
+    .default-content,
+    .section-content {
+      max-width: var(--grid-container-width);
+      margin: 0 auto;
+    }
+  }
 }
 
 @media (width >= 600px) {
+  .section.grid-4 .section-content,
+  .section.grid-6 .section-content {
+    display: grid;
+    grid-template-columns: repeat(calc(var(--grid-size) / 2), 1fr);
+  }
+}
+
+@media (width >= 900px) {
   .section.grid .section-content {
     display: grid;
     grid-template-columns: repeat(var(--grid-size), 1fr);
