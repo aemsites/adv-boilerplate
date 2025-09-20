@@ -104,31 +104,70 @@ function decorateDefaults(el) {
   });
 }
 
-function localizeLinks(links) {
-  const { locale } = getConfig();
+function localizeLink(locale, link) {
   // If we are in the root locale, do nothing
   if (locale.prefix === '') return;
 
-  links.forEach((link) => {
-    try {
-      const url = new URL(link.href);
-      const { origin, pathname, search, hash } = url;
+  try {
+    const url = new URL(link.href);
+    const { origin, pathname, search, hash } = url;
 
-      // If the link is already localized, do nothing
-      if (pathname.startsWith(`${locale.prefix}/`)) return;
+    // If the link is already localized, do nothing
+    if (pathname.startsWith(`${locale.prefix}/`)) return;
 
-      link.href = `${origin}${locale.prefix}${pathname}${search}${hash}`;
-    } catch {
-      throw Error('Could not localize link');
-    }
-  });
+    link.href = `${origin}${locale.prefix}${pathname}${search}${hash}`;
+  } catch {
+    throw Error('Could not localize link');
+  }
+}
+
+function decorateButton(link) {
+  const isEm = link.closest('em');
+  const isStrong = link.closest('strong');
+  const isStrike = link.closest('s');
+  const isUnder = link.querySelector('u');
+  if (!(isEm || isStrong || isStrike || isUnder)) return;
+  const trueParent = link.closest('p, li');
+  if (!trueParent) return;
+  const siblings = [...trueParent.childNodes];
+
+  // Determine if all siblings are links or empty text
+  const hasSibling = siblings.every(
+    (el) => el.nodeName === 'A'
+    || el.nodeName === 'EM'
+    || el.nodeName === 'STRONG'
+    || el.nodeName === 'S'
+    || !el.textContent.trim(),
+  );
+  if (!hasSibling) return;
+  if (siblings.length > 1) trueParent.classList.add('btn-group');
+
+  link.classList.add('btn');
+  if (isStrike) {
+    link.classList.add('btn-negative');
+  } else if (isEm && isStrong) {
+    link.classList.add('btn-accent');
+  } else if (isStrong) {
+    link.classList.add('btn-primary');
+  } else if (isEm) {
+    link.classList.add('btn-secondary');
+  }
+  if (isUnder) {
+    link.classList.add('btn-outline');
+    link.innerHTML = isUnder.innerHTML;
+    isUnder.remove();
+  }
+  const toReplace = isStrong || isEm;
+  trueParent.replaceChild(link, toReplace);
 }
 
 function decorateLinks(el) {
-  const { widgets } = getConfig();
+  const { widgets, locale } = getConfig();
   const anchors = [...el.querySelectorAll('a')];
-  localizeLinks(anchors);
   return anchors.reduce((acc, a) => {
+    localizeLink(locale, a);
+    decorateButton(a);
+
     const { href } = a;
     const found = widgets.some((pattern) => {
       const key = Object.keys(pattern)[0];

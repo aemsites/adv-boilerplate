@@ -113,6 +113,53 @@
   --header-height: 64px;
 }
 
+a {
+  color: light-dark(var(--color-dark-link), var(--color-light-link));
+
+  &.btn {
+    line-height: 1;
+    font-weight: 700;
+    text-decoration: none;
+    border: 2px solid;
+    padding: 8px 12px;
+    box-sizing: border-box;
+
+    &.btn-outline {
+      background: transparent;
+    }
+  }
+
+  &.btn-accent {
+    color: #fff;
+    background: var(--color-green-900);
+    border: 2px solid var(--color-green-900);
+
+    &.btn-outline {
+      color: var(--color-green-900);
+    }
+  }
+
+  &.btn-primary {
+    color: light-dark(var(--color-light), var(--color-dark));
+    background-color: light-dark(var(--color-dark), var(--color-light));
+
+    &.btn-outline {
+      color: light-dark(var(--color-dark), var(--color-light));
+      background: transparent;
+    }
+  }
+
+  &.btn-secondary {
+    color: light-dark(var(--color-light), var(--color-dark));
+    background-color: var(--color-gray-500);
+    border: 2px solid var(--color-gray-500);
+
+    &.btn-outline {
+      color: var(--color-gray-500);
+    }
+  }
+}
+
 body {
   margin: 0;
   background-color: light-dark(var(--color-light), var(--color-dark));
@@ -120,10 +167,6 @@ body {
   font-family: var(--font-family);
   font-size: var(--body-font-size-m);
   line-height: var(--body-line-height);
-
-  a {
-    color: light-dark(var(--color-dark-link), var(--color-light-link));
-  }
 
   &.light-scheme {
     color-scheme: light;
@@ -139,10 +182,6 @@ header {
 }
 
 main {
-  a {
-    color: light-dark(var(--dark-main-link), var(--light-main-link));
-  }
-
   ul,
   ol {
     padding-inline-start: 24px;
@@ -163,10 +202,6 @@ main {
       }
     }
   }
-}
-
-a:hover {
-  text-decoration: underline;
 }
 
 button {
