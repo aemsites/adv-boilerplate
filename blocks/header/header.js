@@ -5,6 +5,32 @@ const { locale } = getConfig();
 
 const HEADER_PATH = '/fragments/nav/header';
 
+function closeAllMenus() {
+  const openMenus = document.body.querySelectorAll('header .is-open');
+  for (const openMenu of openMenus) {
+    openMenu.classList.remove('is-open');
+  }
+}
+
+function docClose(e) {
+  if (e.target.closest('header')) return;
+  closeAllMenus();
+}
+
+function toggleMenu(menu) {
+  const isOpen = menu.classList.contains('is-open');
+  closeAllMenus();
+  if (isOpen) {
+    window.document.removeEventListener(docClose);
+    return;
+  }
+
+  // Setup the global close event
+  window.document.addEventListener('click', docClose);
+
+  menu.classList.add('is-open');
+}
+
 async function decorateLink(section, pattern, name) {
   const link = section.querySelector(`[href*="${pattern}"]`);
   if (!link) return;
@@ -19,7 +45,24 @@ async function decorateLink(section, pattern, name) {
     textSpan.textContent = text;
     btn.append(textSpan);
   }
-  link.parentElement.replaceChild(btn, link);
+  const wrapper = document.createElement('div');
+  wrapper.className = 'action-wrapper';
+  wrapper.append(btn);
+  link.parentElement.parentElement.replaceChild(wrapper, link.parentElement);
+
+  if (name === 'language') {
+    btn.addEventListener('click', async () => {
+      let menu = wrapper.querySelector('.language.menu');
+      if (!menu) {
+        const fragment = await loadFragment(`${locale.prefix}${HEADER_PATH}/languages`);
+        menu = document.createElement('div');
+        menu.className = 'language menu';
+        menu.append(fragment);
+        wrapper.append(menu);
+      }
+      toggleMenu(wrapper);
+    });
+  }
 
   if (name === 'color') {
     btn.addEventListener('click', () => {
@@ -46,39 +89,53 @@ function decorateBrand(section) {
   section.classList.add('brand-section');
 }
 
+function decorateMenu(li) {
+  return null;
+}
+
+function decorateMegaMenu(li) {
+  const menu = li.querySelector('.fragment-content');
+  if (!menu) return null;
+  const megaList = menu.closest('ul');
+  const wrapper = document.createElement('div');
+  wrapper.className = 'mega-menu';
+  wrapper.append(menu);
+  megaList.parentElement.replaceChild(wrapper, megaList);
+  return wrapper;
+}
+
+function decorateNavItem(li) {
+  const link = li.querySelector('a');
+  const menu = decorateMegaMenu(li) || decorateMenu(li);
+  if (!menu) return;
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    toggleMenu(li);
+  });
+}
+
 function decorateMainNav(section) {
   section.classList.add('main-nav-section');
+
+  const mainNavItems = section.querySelectorAll(':scope > .section-content > .default-content > ul > li');
+  for (const navItem of mainNavItems) {
+    decorateNavItem(navItem);
+  }
 }
 
 async function decorateActions(section) {
   section.classList.add('actions-section');
   const color = decorateLink(section, '/tools/widgets/scheme', 'color');
-  const discord = decorateLink(section, 'discord.com', 'discord');
+  const discord = decorateLink(section, '/tools/widgets/language', 'language');
   const github = decorateLink(section, 'github.com', 'github');
   await Promise.all([color, discord, github]);
 }
 
 async function decorateHeader(fragment) {
-  const sections = fragment.querySelectorAll('.section');
+  const sections = fragment.querySelectorAll(':scope > .section');
   if (sections[0]) decorateBrand(sections[0]);
   if (sections[1]) decorateMainNav(sections[1]);
   if (sections[2]) decorateActions(sections[2]);
-
-  // if (img) {
-  //   const brand = img.closest('.section');
-  //   decorateBrand(brand);
-  // }
-
-  // const ul = fragment.querySelector('ul');
-  // if (ul) {
-  //   const mainNav = ul.closest('.section');
-  //   decorateMainNav(mainNav);
-  // }
-
-  // const actions = fragment.querySelector('.section:last-child');
-
-  // // Only decorate the action area if it has not been decorated
-  // if (actions?.classList.length < 2) await decorateActions(actions);
 }
 
 /**

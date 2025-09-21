@@ -2,9 +2,9 @@ import { loadArea, setConfig } from './adv.js';
 
 // Supported locales
 const locales = {
-  '': { ietf: 'en' },
-  '/de': { ietf: 'de' },
-  '/zh': { ietf: 'zh' },
+  '': { lang: 'en' },
+  '/de': { lang: 'de' },
+  '/zh': { lang: 'zh' },
 };
 
 // Widget patterns to look for

@@ -19,7 +19,7 @@ export function getLocale(locales) {
   const { pathname } = window.location;
   const matches = Object.keys(locales).filter((locale) => pathname.startsWith(`${locale}/`));
   const prefix = getMetadata('locale') || matches.sort((a, b) => b.length - a.length)?.[0] || '';
-  if (locales[prefix].ietf) document.documentElement.lang = locales[prefix].ietf;
+  if (locales[prefix].lang) document.documentElement.lang = locales[prefix].lang;
   return { prefix, ...locales[prefix] };
 }
 
@@ -124,7 +124,7 @@ function localizeLink(locale, link) {
 function decorateButton(link) {
   const isEm = link.closest('em');
   const isStrong = link.closest('strong');
-  const isStrike = link.closest('s');
+  const isStrike = link.closest('del');
   const isUnder = link.querySelector('u');
   if (!(isEm || isStrong || isStrike || isUnder)) return;
   const trueParent = link.closest('p, li');
@@ -136,7 +136,7 @@ function decorateButton(link) {
     (el) => el.nodeName === 'A'
     || el.nodeName === 'EM'
     || el.nodeName === 'STRONG'
-    || el.nodeName === 'S'
+    || el.nodeName === 'DEL'
     || !el.textContent.trim(),
   );
   if (!hasSibling) return;
@@ -157,8 +157,22 @@ function decorateButton(link) {
     link.innerHTML = isUnder.innerHTML;
     isUnder.remove();
   }
-  const toReplace = isStrong || isEm;
-  trueParent.replaceChild(link, toReplace);
+  const toReplace = isStrong || isEm || isStrike;
+  if (toReplace) trueParent.replaceChild(link, toReplace);
+}
+
+function decoratePictures(el) {
+  const pics = el.querySelectorAll('picture');
+  for (const pic of pics) {
+    const source = pic.querySelector('source');
+    const clone = source.cloneNode();
+    const [pathname, params] = clone.getAttribute('srcset').split('?');
+    const search = new URLSearchParams(params);
+    search.set('width', 4000);
+    clone.setAttribute('srcset', `${pathname}?${search.toString()}`);
+    clone.setAttribute('media', '(min-width: 1200px)');
+    pic.prepend(clone);
+  }
 }
 
 function decorateLinks(el) {
@@ -220,6 +234,7 @@ function decorateHeader() {
 }
 
 export async function loadArea({ area } = { area: document }) {
+  decoratePictures(area);
   const { decorateArea } = getConfig();
   if (decorateArea) decorateArea({ area });
   const isDoc = area === document;
