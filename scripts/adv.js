@@ -1,10 +1,3 @@
-function getEnv() {
-  const { host } = window.location;
-  if (!['.page', 'localhost'].some((check) => host.includes(check))) return 'prod';
-  if (['.aem.'].some((check) => host.includes(check))) return 'stage';
-  return 'dev';
-}
-
 export function aemlog(msg) {
   console.log(msg);
 }
@@ -29,7 +22,6 @@ export const [setConfig, getConfig] = (() => {
     (conf = {}) => {
       config = {
         ...conf,
-        env: getEnv(),
         locale: getLocale(conf.locales),
         codeBase: `${import.meta.url.replace('/scripts/adv.js', '')}`,
       };
@@ -127,7 +119,7 @@ function decorateButton(link) {
   const isStrike = link.closest('del');
   const isUnder = link.querySelector('u');
   if (!(isEm || isStrong || isStrike || isUnder)) return;
-  const trueParent = link.closest('p, li');
+  const trueParent = link.closest('p, li, div');
   if (!trueParent) return;
   const siblings = [...trueParent.childNodes];
 

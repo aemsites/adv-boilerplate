@@ -10,6 +10,7 @@ const locales = {
 // Widget patterns to look for
 const widgets = [
   { fragment: '/fragments/' },
+  { schedule: '/schedules/' },
   { youtube: 'https://www.youtube' },
 ];
 
