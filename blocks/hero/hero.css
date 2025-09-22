@@ -45,12 +45,20 @@
     display: flex;
     align-items: center;
 
-    div:first-child {
+    div > *:first-child {
       margin-top: 0;
     }
 
-    div:last-child {
+    div > *:last-child {
       margin-bottom: 0;
+    }
+
+    .hero-detail {
+      margin: 0;
+    }
+
+    .hero-heading {
+      margin: 0;
     }
   }
 }
