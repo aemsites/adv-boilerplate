@@ -1,4 +1,16 @@
 .section {
+  padding: var(--top-bottom-spacing);
+  color: light-dark(var(--color-dark), var(--color-light));
+  background-color: light-dark(var(--color-light), var(--color-dark));
+
+  &.scheme-light {
+    color-scheme: light;
+  }
+
+  &.scheme-dark {
+    color-scheme: dark;
+  }
+
   &.grid-2 {
     --grid-size: 2;
   }
@@ -43,6 +55,30 @@
     --gap-spacing: var(--spacing-xxl);
   }
 
+  &.spacing-xs {
+    --top-bottom-spacing: calc(var(--spacing-xs) * 2);
+  }
+
+  &.spacing-s {
+    --top-bottom-spacing: calc(var(--spacing-s) * 2);
+  }
+
+  &.spacing-m {
+    --top-bottom-spacing: calc(var(--spacing-m) * 2);
+  }
+
+  &.spacing-l {
+    --top-bottom-spacing: calc(var(--spacing-l) * 2);
+  }
+
+  &.spacing-xl {
+    --top-bottom-spacing: calc(var(--spacing-xl) * 2);
+  }
+
+  &.spacing-xxl {
+    --top-bottom-spacing: calc(var(--spacing-xxl) * 2);
+  }
+
   .section-content {
     gap: var(--gap-spacing);
   }
@@ -53,12 +89,38 @@
     }
   }
 
+  > .default-content > *:first-child {
+    margin-top: 0;
+  }
+
   &.container {
     .default-content,
     .section-content {
       max-width: var(--grid-container-width);
       margin: 0 auto;
     }
+  }
+
+  &.has-background {
+    position: relative;
+
+    .default-content,
+    .section-content {
+      position: relative;
+    }
+  }
+
+  picture.section-background {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .section-background img {
+    object-fit: cover;
+    height: 100%;
+    width: 100%;
   }
 }
 

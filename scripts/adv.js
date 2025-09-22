@@ -179,7 +179,7 @@ function decorateLinks(el) {
       const key = Object.keys(pattern)[0];
       if (!href.includes(pattern[key])) return false;
       const classes = [key, 'auto-block'];
-      if (key === 'fragment') classes.push('cmp');
+      if (key === 'fragment' || key === 'schedule') classes.push('cmp');
       a.classList.add(...classes);
       return true;
     });
