@@ -1,7 +1,6 @@
 .section {
   padding: var(--top-bottom-spacing);
   color: light-dark(var(--color-dark), var(--color-light));
-  background-color: light-dark(var(--color-light), var(--color-dark));
 
   &.scheme-light {
     color-scheme: light;
@@ -122,6 +121,10 @@
     height: 100%;
     width: 100%;
   }
+}
+
+main .section {
+  background-color: light-dark(var(--color-light), var(--color-dark));
 }
 
 @media (width >= 900px) {
