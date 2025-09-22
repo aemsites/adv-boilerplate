@@ -2,14 +2,6 @@
   padding: var(--top-bottom-spacing) 0;
   color: light-dark(var(--color-dark), var(--color-light));
 
-  &.scheme-light {
-    color-scheme: light;
-  }
-
-  &.scheme-dark {
-    color-scheme: dark;
-  }
-
   &.grid-2 {
     --grid-size: 2;
   }

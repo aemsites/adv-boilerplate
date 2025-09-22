@@ -43,7 +43,6 @@ export default async function init(el) {
   const section = el.closest('.section');
   if (!section) return;
   const metadata = getMetadata(el);
-  if (metadata.scheme?.text) handleLayout(metadata.scheme?.text, section, 'scheme');
   if (metadata.style?.text) await handleStyle(metadata.style.text, section);
   if (metadata.grid?.text) handleLayout(metadata.grid.text, section, 'grid');
   if (metadata.gap?.text) handleLayout(metadata.gap.text, section, 'gap');
