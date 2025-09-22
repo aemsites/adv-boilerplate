@@ -21,7 +21,7 @@ function toggleMenu(menu) {
   const isOpen = menu.classList.contains('is-open');
   closeAllMenus();
   if (isOpen) {
-    window.document.removeEventListener(docClose);
+    window.document.removeEventListener('click', docClose);
     return;
   }
 

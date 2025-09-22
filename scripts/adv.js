@@ -96,20 +96,17 @@ function decorateDefaults(el) {
   });
 }
 
-function localizeLink(locale, link) {
-  // If we are in the root locale, do nothing
-  if (locale.prefix === '') return;
-
-  try {
-    const url = new URL(link.href);
-    const { origin, pathname, search, hash } = url;
-
-    // If the link is already localized, do nothing
-    if (pathname.startsWith(`${locale.prefix}/`)) return;
-
-    link.href = `${origin}${locale.prefix}${pathname}${search}${hash}`;
-  } catch {
-    throw Error('Could not localize link');
+function decoratePictures(el) {
+  const pics = el.querySelectorAll('picture');
+  for (const pic of pics) {
+    const source = pic.querySelector('source');
+    const clone = source.cloneNode();
+    const [pathname, params] = clone.getAttribute('srcset').split('?');
+    const search = new URLSearchParams(params);
+    search.set('width', 4000);
+    clone.setAttribute('srcset', `${pathname}?${search.toString()}`);
+    clone.setAttribute('media', '(min-width: 1200px)');
+    pic.prepend(clone);
   }
 }
 
@@ -153,25 +150,33 @@ function decorateButton(link) {
   if (toReplace) trueParent.replaceChild(link, toReplace);
 }
 
-function decoratePictures(el) {
-  const pics = el.querySelectorAll('picture');
-  for (const pic of pics) {
-    const source = pic.querySelector('source');
-    const clone = source.cloneNode();
-    const [pathname, params] = clone.getAttribute('srcset').split('?');
-    const search = new URLSearchParams(params);
-    search.set('width', 4000);
-    clone.setAttribute('srcset', `${pathname}?${search.toString()}`);
-    clone.setAttribute('media', '(min-width: 1200px)');
-    pic.prepend(clone);
+function localizeLink(locales, locale, link) {
+  // If we are in the root locale, do nothing
+  if (locale.prefix === '') return;
+
+  try {
+    const url = new URL(link.href);
+    const { origin, pathname, search, hash } = url;
+
+    // If the link is already localized, do nothing
+    if (pathname.startsWith(`${locale.prefix}/`)) return;
+
+    const localized = Object.keys(locales).some(
+      (key) => key !== '' && pathname.startsWith(`${key}/`),
+    );
+    if (localized) return;
+
+    link.href = `${origin}${locale.prefix}${pathname}${search}${hash}`;
+  } catch {
+    throw Error('Could not localize link');
   }
 }
 
 function decorateLinks(el) {
-  const { widgets, locale } = getConfig();
+  const { widgets, locales, locale } = getConfig();
   const anchors = [...el.querySelectorAll('a')];
   return anchors.reduce((acc, a) => {
-    localizeLink(locale, a);
+    localizeLink(locales, locale, a);
     decorateButton(a);
 
     const { href } = a;
