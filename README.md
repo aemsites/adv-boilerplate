@@ -7,7 +7,6 @@ A boilerplate for projects that want a few more batteries.
 * Retina image support
 * Extensible LCP detection
 * Extensible Sidekick plumbing
-* AEM Experimentation
 * Content scheduling simulator
 * Advanced Section Metadata
 * Adobe Fonts support
