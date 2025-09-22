@@ -1,5 +1,5 @@
 .section {
-  padding: var(--top-bottom-spacing);
+  padding: var(--top-bottom-spacing) 0;
   color: light-dark(var(--color-dark), var(--color-light));
 
   &.scheme-light {
@@ -78,7 +78,8 @@
     --top-bottom-spacing: calc(var(--spacing-xxl) * 2);
   }
 
-  .section-content {
+  &.grid .section-content {
+    display: grid;
     gap: var(--gap-spacing);
   }
 
