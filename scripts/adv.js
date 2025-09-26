@@ -1,6 +1,4 @@
-export function aemlog(msg) {
-  console.log(msg);
-}
+const log = async (ex, el) => (await import('./utils/error.js')).default(ex, el);
 
 export function getMetadata(name) {
   const attr = name && name.includes(':') ? 'property' : 'name';
@@ -22,6 +20,7 @@ export const [setConfig, getConfig] = (() => {
     (conf = {}) => {
       config = {
         ...conf,
+        log: conf.log || log,
         locale: getLocale(conf.locales),
         codeBase: `${import.meta.url.replace('/scripts/adv.js', '')}`,
       };
@@ -47,6 +46,7 @@ export async function loadStyle(href) {
 }
 
 export async function loadBlock(block) {
+  const { components } = getConfig();
   const { classList } = block;
   const name = classList[0];
   block.dataset.blockName = name;
@@ -55,11 +55,12 @@ export async function loadBlock(block) {
     (async () => {
       try {
         await (await import(`${blockPath}.js`)).default(block);
-      } catch (e) { aemlog(e); }
+      } catch (ex) { await log(ex, block); }
       resolve();
     })();
   })];
-  if (!classList.contains('cmp')) loaded.push(loadStyle(`${blockPath}.css`));
+  const isCmp = components.some((cmp) => name === cmp);
+  if (!isCmp) loaded.push(loadStyle(`${blockPath}.css`));
   await Promise.all(loaded);
   return block;
 }
@@ -186,9 +187,7 @@ function decorateLinks(el) {
     const found = widgets.some((pattern) => {
       const key = Object.keys(pattern)[0];
       if (!href.includes(pattern[key])) return false;
-      const classes = [key, 'auto-block'];
-      if (key === 'fragment' || key === 'schedule') classes.push('cmp');
-      a.classList.add(...classes);
+      a.classList.add(key, 'auto-block');
       return true;
     });
     if (found) acc.push(a);

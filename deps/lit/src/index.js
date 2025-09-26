@@ -1,8 +1,3 @@
-import { LitElement, html, nothing, render } from 'lit';
+import { LitElement, html, nothing } from 'lit';
 
-export {
-  LitElement,
-  html,
-  nothing,
-  render,
-};
+export { LitElement, html, nothing };

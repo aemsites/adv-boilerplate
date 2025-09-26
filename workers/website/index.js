@@ -51,8 +51,7 @@ const getRUMRequest = (request, url) => {
 };
 
 const formatSearchParams = (url) => {
-  // remember original search params
-  const { search: savedSearch, searchParams } = url;
+  const { search, searchParams } = url;
 
   if (isMediaRequest(url)) {
     for (const [key] of searchParams.entries()) {
@@ -66,7 +65,9 @@ const formatSearchParams = (url) => {
     url.search = '';
   }
   searchParams.sort();
-  return savedSearch;
+
+  // Return original search params
+  return search;
 };
 
 const formatRequest = (env, url) => {
@@ -85,42 +86,40 @@ const formatRequest = (env, url) => {
   return req;
 };
 
-const getResp = async (req, savedSearch) => {
+const fetchFromOrigin = async (req, savedSearch) => {
   let resp = await fetch(req, { method: req.method, cf: { cacheEverything: true } });
   resp = new Response(resp.body, resp);
 
-  // Handle redirects with
+  // Handle redirects
   const redirectResp = getRedirect(resp, savedSearch);
   if (redirectResp) return redirectResp;
 
-  if (resp.status === 304) {
-    // 304 Not Modified - remove CSP header
-    resp.headers.delete('Content-Security-Policy');
-  }
+  // 304 Not Modified - remove CSP header
+  if (resp.status === 304) resp.headers.delete('Content-Security-Policy');
+
   resp.headers.delete('age');
   resp.headers.delete('x-robots-tag');
 
   return resp;
 };
 
-const handleRequest = async (request, env) => {
-  const url = new URL(request.url);
+export default {
+  async fetch(req, env) {
+    const url = new URL(req.url);
 
-  const draftResp = getDraft(url);
-  if (draftResp) return draftResp;
+    const draftResp = getDraft(url);
+    if (draftResp) return draftResp;
 
-  const portResp = getPortRedirect(request, url);
-  if (portResp) return portResp;
+    const portResp = getPortRedirect(req, url);
+    if (portResp) return portResp;
 
-  const rumResp = getRUMRequest(request, url);
-  if (rumResp) return rumResp;
+    const rumResp = getRUMRequest(req, url);
+    if (rumResp) return rumResp;
 
-  const savedSearch = formatSearchParams(url);
+    const savedSearch = formatSearchParams(url);
 
-  const req = formatRequest(env, url);
+    const request = formatRequest(env, url);
 
-  const resp = await getResp(req, savedSearch);
-  return resp;
+    return fetchFromOrigin(request, savedSearch);
+  },
 };
-
-export default { fetch: handleRequest };

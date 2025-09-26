@@ -1,6 +1,5 @@
 import { loadArea, setConfig } from './adv.js';
 
-// Supported locales
 const locales = {
   '': { lang: 'en' },
   '/de': { lang: 'de' },
@@ -18,6 +17,9 @@ const widgets = [
   { youtube: 'https://www.youtube' },
 ];
 
+// Blocks with self-managed styles
+const components = ['fragment', 'schedule'];
+
 // How to decorate an area before loading it
 const decorateArea = ({ area = document }) => {
   const eagerLoad = (parent, selector) => {
@@ -29,6 +31,6 @@ const decorateArea = ({ area = document }) => {
 };
 
 (async function loadPage() {
-  setConfig({ locales, widgets, decorateArea });
+  setConfig({ locales, widgets, components, decorateArea });
   await loadArea();
 }());

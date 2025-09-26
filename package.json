@@ -43,8 +43,6 @@
   },
   "dependencies": {
     "esbuild": "^0.25.10",
-    "lit": "^3.3.1",
-    "prism-themes": "^1.9.0",
-    "prismjs": "^1.30.0"
+    "lit": "^3.3.1"
   }
 }

@@ -1,14 +1,16 @@
-import { aemlog } from '../../scripts/adv.js';
+import { getConfig } from '../../scripts/adv.js';
 import ENV from '../../scripts/utils/env.js';
 import { loadFragment } from '../fragment/fragment.js';
 
-async function removeSchedule(e, a, pathname) {
+const { log } = getConfig();
+
+async function removeSchedule(a, e) {
   if (ENV === 'prod') {
     a.remove();
     return;
   }
-  aemlog(e);
-  aemlog(`Could not load: ${pathname || a.href}`);
+  if (e) log(e);
+  log(`Could not load: ${a.href}`);
 }
 
 async function loadEvent(a, event) {
@@ -39,7 +41,7 @@ async function loadEvent(a, event) {
 
     a.parentElement.replaceChild(fragment, a);
   } catch (e) {
-    removeSchedule(e, a, pathname);
+    removeSchedule(a, e);
   }
 }
 
@@ -69,7 +71,7 @@ export default async function init(a) {
         await loadEvent(a, event);
       }
     } catch {
-      aemlog(`Could not get scheduled event: ${event.name}`);
+      log(`Could not get scheduled event: ${event.name}`);
     }
   }
   // fallback to default event
