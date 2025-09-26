@@ -104,6 +104,7 @@ function decoratePictures(el) {
     const [pathname, params] = clone.getAttribute('srcset').split('?');
     const search = new URLSearchParams(params);
     search.set('width', 4000);
+    // search.set('optimize', 'low');
     clone.setAttribute('srcset', `${pathname}?${search.toString()}`);
     clone.setAttribute('media', '(min-width: 1200px)');
     pic.prepend(clone);
@@ -160,6 +161,8 @@ function localizeLink(locales, locale, link) {
 
     // If the link is already localized, do nothing
     if (pathname.startsWith(`${locale.prefix}/`)) return;
+
+    if (hash.includes('_dnt')) return;
 
     const localized = Object.keys(locales).some(
       (key) => key !== '' && pathname.startsWith(`${key}/`),

@@ -4,6 +4,10 @@ import { loadFragment } from '../fragment/fragment.js';
 const { locale } = getConfig();
 
 const HEADER_PATH = '/fragments/nav/header';
+const HEADER_ACTIONS = [
+  '/tools/widgets/scheme',
+  '/tools/widgets/language',
+];
 
 function closeAllMenus() {
   const openMenus = document.body.querySelectorAll('header .is-open');
@@ -31,7 +35,42 @@ function toggleMenu(menu) {
   menu.classList.add('is-open');
 }
 
-async function decorateLink(section, pattern, name) {
+function decorateLanguage(btn) {
+  const wrapper = btn.closest('.action-wrapper');
+  btn.addEventListener('click', async () => {
+    let menu = wrapper.querySelector('.language.menu');
+    if (!menu) {
+      const fragment = await loadFragment(`${locale.prefix}${HEADER_PATH}/languages`);
+      menu = document.createElement('div');
+      menu.className = 'language menu';
+      menu.append(fragment);
+      wrapper.append(menu);
+    }
+    toggleMenu(wrapper);
+  });
+}
+
+function decorateScheme(btn) {
+  btn.addEventListener('click', () => {
+    const { body } = document;
+
+    let currPref = localStorage.getItem('color-scheme');
+    if (!currPref) {
+      currPref = matchMedia('(prefers-color-scheme: dark)')
+        .matches ? 'dark-scheme' : 'light-scheme';
+    }
+
+    const theme = currPref === 'dark-scheme'
+      ? { add: 'light-scheme', remove: 'dark-scheme' }
+      : { add: 'dark-scheme', remove: 'light-scheme' };
+
+    body.classList.remove(theme.remove);
+    body.classList.add(theme.add);
+    localStorage.setItem('color-scheme', theme.add);
+  });
+}
+
+async function decorateAction(section, pattern) {
   const link = section.querySelector(`[href*="${pattern}"]`);
   if (!link) return;
 
@@ -50,39 +89,8 @@ async function decorateLink(section, pattern, name) {
   wrapper.append(btn);
   link.parentElement.parentElement.replaceChild(wrapper, link.parentElement);
 
-  if (name === 'language') {
-    btn.addEventListener('click', async () => {
-      let menu = wrapper.querySelector('.language.menu');
-      if (!menu) {
-        const fragment = await loadFragment(`${locale.prefix}${HEADER_PATH}/languages`);
-        menu = document.createElement('div');
-        menu.className = 'language menu';
-        menu.append(fragment);
-        wrapper.append(menu);
-      }
-      toggleMenu(wrapper);
-    });
-  }
-
-  if (name === 'color') {
-    btn.addEventListener('click', () => {
-      const { body } = document;
-
-      let currPref = localStorage.getItem('color-scheme');
-      if (!currPref) {
-        currPref = matchMedia('(prefers-color-scheme: dark)')
-          .matches ? 'dark-scheme' : 'light-scheme';
-      }
-
-      const theme = currPref === 'dark-scheme'
-        ? { add: 'light-scheme', remove: 'dark-scheme' }
-        : { add: 'dark-scheme', remove: 'light-scheme' };
-
-      body.classList.remove(theme.remove);
-      body.classList.add(theme.add);
-      localStorage.setItem('color-scheme', theme.add);
-    });
-  }
+  if (pattern === '/tools/widgets/language') decorateLanguage(btn);
+  if (pattern === '/tools/widgets/scheme') decorateScheme(btn);
 }
 
 function decorateBrand(section) {
@@ -125,10 +133,9 @@ function decorateMainNav(section) {
 
 async function decorateActions(section) {
   section.classList.add('actions-section');
-  const color = decorateLink(section, '/tools/widgets/scheme', 'color');
-  const discord = decorateLink(section, '/tools/widgets/language', 'language');
-  const github = decorateLink(section, 'github.com', 'github');
-  await Promise.all([color, discord, github]);
+  for (const pattern of HEADER_ACTIONS) {
+    decorateAction(section, pattern);
+  }
 }
 
 async function decorateHeader(fragment) {
