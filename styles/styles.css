@@ -138,6 +138,7 @@ a {
   color: light-dark(var(--color-dark-link), var(--color-light-link));
 
   &.btn {
+    display: inline-block;
     line-height: 1;
     font-weight: 700;
     text-decoration: none;
@@ -208,13 +209,11 @@ main {
     }
   }
 
-  /* Only top level default content gets auto container treatment */
+  /* Only default content gets auto container treatment */
   .section {
-    > .section-content {
-      > .default-content {
-        max-width: var(--grid-container-width);
-        margin: 0 auto;
-      }
+    > .default-content {
+      max-width: var(--grid-container-width);
+      margin: 0 auto;
     }
   }
 }
@@ -279,4 +278,12 @@ svg {
 main > div,
 div[data-status] {
   display: none;
+}
+
+aem-sidekick {
+  display: none;
+
+  &.is-ready {
+    display: block;
+  }
 }

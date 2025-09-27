@@ -70,7 +70,7 @@
     --top-bottom-spacing: calc(var(--spacing-xxl) * 2);
   }
 
-  &.grid .section-content {
+  &.grid .block-content {
     display: grid;
     gap: var(--gap-spacing);
   }
@@ -87,7 +87,7 @@
 
   &.container {
     .default-content,
-    .section-content {
+    .block-content {
       max-width: var(--grid-container-width);
       margin: 0 auto;
     }
@@ -97,7 +97,7 @@
     position: relative;
 
     .default-content,
-    .section-content {
+    .block-content {
       position: relative;
     }
   }
@@ -121,15 +121,15 @@ main .section {
 }
 
 @media (width >= 900px) {
-  .section.grid-4 .section-content,
-  .section.grid-6 .section-content {
+  .section.grid-4 .block-content,
+  .section.grid-6 .block-content {
     display: grid;
     grid-template-columns: repeat(calc(var(--grid-size) / 2), 1fr);
   }
 }
 
 @media (width >= 1200px) {
-  .section.grid .section-content {
+  .section.grid .block-content {
     display: grid;
     grid-template-columns: repeat(var(--grid-size), 1fr);
   }

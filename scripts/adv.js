@@ -55,7 +55,7 @@ export async function loadBlock(block) {
     (async () => {
       try {
         await (await import(`${blockPath}.js`)).default(block);
-      } catch (ex) { await log(ex, block); }
+      } catch (ex) { await getConfig().log(ex, block); }
       resolve();
     })();
   })];
@@ -63,38 +63,6 @@ export async function loadBlock(block) {
   if (!isCmp) loaded.push(loadStyle(`${blockPath}.css`));
   await Promise.all(loaded);
   return block;
-}
-
-function decorateContent(el) {
-  const children = [el];
-  let child = el;
-  while (child) {
-    child = child.nextElementSibling;
-    if (child && child.nodeName !== 'DIV') {
-      children.push(child);
-    } else {
-      break;
-    }
-  }
-  const block = document.createElement('div');
-  block.className = 'default-content';
-  block.append(...children);
-  return block;
-}
-
-function decorateDefaults(el) {
-  const firstChild = ':scope > *:not(div):first-child';
-  const afterBlock = ':scope > div + *:not(div)';
-  const children = el.querySelectorAll(`${firstChild}, ${afterBlock}`);
-  children.forEach((child) => {
-    const prev = child.previousElementSibling;
-    const content = decorateContent(child);
-    if (prev) {
-      prev.insertAdjacentElement('afterend', content);
-    } else {
-      el.insertAdjacentElement('afterbegin', content);
-    }
-  });
 }
 
 function decoratePictures(el) {
@@ -122,7 +90,6 @@ function decorateButton(link) {
   if (!trueParent) return;
   const siblings = [...trueParent.childNodes];
 
-  // Determine if all siblings are links or empty text
   const hasSibling = siblings.every(
     (el) => el.nodeName === 'A'
     || el.nodeName === 'EM'
@@ -152,45 +119,63 @@ function decorateButton(link) {
   if (toReplace) trueParent.replaceChild(link, toReplace);
 }
 
-function localizeLink(locales, locale, link) {
+function localizeLink(locales, locale, a) {
   // If we are in the root locale, do nothing
   if (locale.prefix === '') return;
-
   try {
-    const url = new URL(link.href);
+    const url = new URL(a.href);
     const { origin, pathname, search, hash } = url;
 
     // If the link is already localized, do nothing
     if (pathname.startsWith(`${locale.prefix}/`)) return;
-
-    if (hash.includes('_dnt')) return;
 
     const localized = Object.keys(locales).some(
       (key) => key !== '' && pathname.startsWith(`${key}/`),
     );
     if (localized) return;
 
-    link.href = `${origin}${locale.prefix}${pathname}${search}${hash}`;
-  } catch {
-    throw Error('Could not localize link');
+    a.href = `${origin}${locale.prefix}${pathname}${search}${hash}`;
+  } catch (ex) {
+    getConfig().log(ex, a);
   }
+}
+
+function decorateHash(a) {
+  const { hash } = new URL(a.href);
+  if (!hash || hash === '#') return {};
+
+  const findHash = (name) => {
+    const found = hash.includes(name);
+    if (found) a.href = a.href.replace(name, '');
+    return found;
+  };
+
+  const blank = findHash('#_blank');
+  if (blank) a.target = '_blank';
+
+  const dnt = findHash('#_dnt');
+  const dnb = findHash('#_dnb');
+  return { dnt, dnb };
 }
 
 function decorateLinks(el) {
   const { widgets, locales, locale } = getConfig();
   const anchors = [...el.querySelectorAll('a')];
   return anchors.reduce((acc, a) => {
-    localizeLink(locales, locale, a);
+    const { dnt, dnb } = decorateHash(a);
+    if (!dnt) localizeLink(locales, locale, a);
     decorateButton(a);
 
-    const { href } = a;
-    const found = widgets.some((pattern) => {
-      const key = Object.keys(pattern)[0];
-      if (!href.includes(pattern[key])) return false;
-      a.classList.add(key, 'auto-block');
-      return true;
-    });
-    if (found) acc.push(a);
+    if (!dnb) {
+      const { href } = a;
+      const found = widgets.some((pattern) => {
+        const key = Object.keys(pattern)[0];
+        if (!href.includes(pattern[key])) return false;
+        a.classList.add(key, 'auto-block');
+        return true;
+      });
+      if (found) acc.push(a);
+    }
     return acc;
   }, []);
 }
@@ -201,21 +186,41 @@ function loadIcons(el) {
   import('./utils/icons.js').then((mod) => mod.default(icons));
 }
 
+function groupChildren(children) {
+  const groups = [];
+  let currentGroup = null;
+
+  for (const child of children) {
+    const isDiv = child.tagName === 'DIV';
+    const currentType = currentGroup?.classList.contains('block-content');
+
+    if (!currentGroup || currentType !== isDiv) {
+      currentGroup = document.createElement('div');
+      currentGroup.className = isDiv
+        ? 'block-content' : 'default-content';
+      groups.push(currentGroup);
+    }
+
+    currentGroup.append(child);
+  }
+
+  return groups;
+}
+
 function decorateSections(parent, isDoc) {
   const selector = isDoc ? 'main > div' : ':scope > div';
-  return [...parent.querySelectorAll(selector)].map((el) => {
-    const { parentElement } = el;
-    const section = document.createElement('div');
+  return [...parent.querySelectorAll(selector)].map((section) => {
+    const children = section.querySelectorAll(':scope > *');
+
+    // Group children by continuous types
+    const groups = groupChildren(children);
+    section.append(...groups);
+
     section.classList.add('section');
     section.dataset.status = 'decorated';
-    section.append(el);
 
-    parentElement.append(section);
-    el.classList.add('section-content');
-
-    section.widgets = decorateLinks(el);
-    section.blocks = [...el.querySelectorAll(':scope > div[class]')];
-    decorateDefaults(el);
+    section.widgets = decorateLinks(section);
+    section.blocks = [...section.querySelectorAll('.block-content > div[class]')];
     return section;
   });
 }
@@ -249,7 +254,7 @@ export async function loadArea({ area } = { area: document }) {
   if (isDoc) import('./lazy.js');
 }
 
-(function loadAem() {
+(function init() {
   // Setup scheme
   const scheme = localStorage.getItem('color-scheme');
   if (scheme) document.body.classList.add(scheme);

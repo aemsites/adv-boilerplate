@@ -19,13 +19,7 @@ async function handleStyle(text, section) {
 
 async function handleLayout(text, section, type) {
   if (text === '0') return;
-  if (type === 'grid') {
-    section.classList.add('grid');
-    const children = section.querySelectorAll('.section-content > *');
-    if (children[0].classList.contains('default-content')) {
-      section.prepend(children[0]);
-    }
-  }
+  if (type === 'grid') section.classList.add('grid');
   section.classList.add(`${type}-${text}`);
 }
 

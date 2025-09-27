@@ -1,8 +1,6 @@
-const ENV = (() => {
+export default (() => {
   const { host } = window.location;
-  if (!['.page', 'localhost'].some((check) => host.includes(check))) return 'prod';
-  if (['.aem.'].some((check) => host.includes(check))) return 'stage';
+  if (!['--', 'local'].some((check) => host.includes(check))) return 'prod';
+  if (['--'].some((check) => host.includes(check))) return 'stage';
   return 'dev';
 })();
-
-export default ENV;

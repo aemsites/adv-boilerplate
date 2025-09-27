@@ -30,7 +30,7 @@ async function loadEvent(a, event) {
       }
     }
 
-    if (count === 3) {
+    if (count === 2) {
       const sections = fragment.querySelectorAll(':scope > .section');
       for (const section of sections) {
         parent.insertAdjacentElement('afterend', section);

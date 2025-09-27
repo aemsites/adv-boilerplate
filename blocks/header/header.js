@@ -125,7 +125,7 @@ function decorateNavItem(li) {
 function decorateMainNav(section) {
   section.classList.add('main-nav-section');
 
-  const mainNavItems = section.querySelectorAll(':scope > .section-content > .default-content > ul > li');
+  const mainNavItems = section.querySelectorAll(':scope > .default-content > ul > li');
   for (const navItem of mainNavItems) {
     decorateNavItem(navItem);
   }
